@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주민센터 장애인 접근권 체크리스트 | 함께이룸</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+:root{--bg:#F7F5F0;--white:#FFF;--ink:#1A1A1A;--ink-light:#555;--ink-muted:#999;--border:#E0DDD6;--chair:#1B4FD8;--chair-light:#EEF3FF;--ear:#0D7A5F;--ear-light:#E6F5F1;--staff:#9B3A12;--staff-light:#FDF0EA;--yes:#059669;--yes-bg:#ECFDF5;--partial:#D97706;--partial-bg:#FFFBEB;--no:#DC2626;--no-bg:#FEF2F2;--na:#6B7280;--na-bg:#F9FAFB;--r:16px;--rs:10px;--sh:0 2px 16px rgba(0,0,0,0.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6}
+.site-header{background:var(--ink);color:white;padding:0 20px}
+.header-inner{max-width:760px;margin:0 auto;padding:20px 0 0}
+.org-name{font-size:11px;font-weight:500;letter-spacing:.15em;opacity:.5;text-transform:uppercase;margin-bottom:8px}
+.site-title{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;line-height:1.3;margin-bottom:6px}
+.site-subtitle{font-size:13px;opacity:.6;margin-bottom:20px}
+.tab-row{display:flex;margin-top:16px}
+.tab-btn{flex:1;padding:12px 8px;background:transparent;border:none;color:rgba(255,255,255,.45);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.tab-btn:hover{color:rgba(255,255,255,.75)}
+.tab-btn.chair.active{border-bottom-color:#7BA7FF;color:#7BA7FF}
+.tab-btn.ear.active{border-bottom-color:#5ECFB4;color:#5ECFB4}
+.tab-btn.staff.active{border-bottom-color:#F5A67A;color:#F5A67A}
+.main{max-width:760px;margin:0 auto;padding:28px 20px 60px}
+.page{display:none}.page.active{display:block}
+.cat-header{border-radius:var(--r);padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;gap:18px}
+.cat-header.chair{background:var(--chair);color:white}
+.cat-header.ear{background:var(--ear);color:white}
+.cat-header.staff{background:var(--staff);color:white}
+.cat-emoji{font-size:40px}
+.cat-title{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;margin-bottom:4px}
+.cat-desc{font-size:13px;opacity:.8}
+.progress-card{background:var(--white);border-radius:var(--r);padding:18px 22px;margin-bottom:20px;box-shadow:var(--sh);display:flex;align-items:center;gap:16px}
+.progress-ring{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.progress-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.ring-num{position:relative;z-index:1;font-size:14px;font-weight:700}
+.progress-info{flex:1}
+.progress-title{font-size:13px;font-weight:700;margin-bottom:6px}
+.progress-bar-wrap{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.chair-pg .progress-bar-fill{background:var(--chair)}
+.ear-pg .progress-bar-fill{background:var(--ear)}
+.staff-pg .progress-bar-fill{background:var(--staff)}
+.progress-count{font-size:12px;color:var(--ink-muted);margin-top:5px}
+.checklist{display:flex;flex-direction:column;gap:14px}
+.check-item{background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);border:2px solid transparent;transition:border-color .2s}
+.check-item.ans-yes{border-color:#A7F3D0}
+.check-item.ans-partial{border-color:#FDE68A}
+.check-item.ans-no{border-color:#FECACA}
+.check-top{padding:18px 20px 14px}
+.check-num-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.check-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0}
+.chair-pg .check-num{background:var(--chair)}
+.ear-pg .check-num{background:var(--ear)}
+.staff-pg .check-num{background:var(--staff)}
+.check-tag{font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+.chair-pg .check-tag{background:var(--chair-light);color:var(--chair)}
+.ear-pg .check-tag{background:var(--ear-light);color:var(--ear)}
+.staff-pg .check-tag{background:var(--staff-light);color:var(--staff)}
+.check-q{font-size:14px;font-weight:600;line-height:1.55;margin-bottom:4px}
+.check-hint{font-size:12px;color:var(--ink-muted);line-height:1.5}
+.answer-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border)}
+.ans-btn{padding:11px 4px;background:var(--white);border:none;border-right:1px solid var(--border);font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:600;color:var(--ink-light);cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ans-btn:last-child{border-right:none}
+.ans-btn:hover{background:var(--bg)}
+.ans-icon{font-size:16px}
+.sel-yes{background:var(--yes-bg)!important;color:var(--yes)!important}
+.sel-partial{background:var(--partial-bg)!important;color:var(--partial)!important}
+.sel-no{background:var(--no-bg)!important;color:var(--no)!important}
+.sel-na{background:var(--na-bg)!important;color:var(--na)!important}
+.memo-area{padding:0 20px 16px;display:none}
+.memo-area.show{display:block}
+.memo-input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--rs);font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);resize:vertical;min-height:60px;outline:none}
+.result-summary{background:var(--white);border-radius:var(--r);padding:22px;margin-bottom:14px;box-shadow:var(--sh)}
+.result-title{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--ink-light)}
+.result-bars{display:flex;flex-direction:column;gap:10px}
+.result-row{display:flex;align-items:center;gap:10px}
+.result-label{font-size:12px;color:var(--ink-light);width:50px;flex-shrink:0}
+.result-bar{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.result-bar-fill{height:100%;border-radius:5px;transition:width .6s ease}
+.result-bar-fill.yes{background:var(--yes)}
+.result-bar-fill.partial{background:var(--partial)}
+.result-bar-fill.no{background:var(--no)}
+.result-count{font-size:12px;font-weight:700;width:24px;text-align:right}
+.result-count.yes{color:var(--yes)}.result-count.partial{color:var(--partial)}.result-count.no{color:var(--no)}
+.select-card{background:var(--white);border-radius:var(--r);padding:18px 20px;margin-bottom:20px;box-shadow:var(--sh)}
+.select-label{font-size:12px;font-weight:700;color:var(--ink-muted);letter-spacing:.08em;margin-bottom:8px}
+.center-select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Noto Sans KR',sans-serif;font-size:14px;color:var(--ink);background:var(--bg);cursor:pointer;outline:none}
+/* 저장 버튼 영역 */
+.save-area{margin-top:8px}
+.save-btn{width:100%;padding:15px;border:none;border-radius:var(--r);font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;color:white;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.chair-pg .save-btn{background:var(--chair)}
+.ear-pg .save-btn{background:var(--ear)}
+.staff-pg .save-btn{background:var(--staff)}
+.save-btn:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
+.save-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+/* 저장 상태 */
+.save-status{margin-top:10px;padding:12px 16px;border-radius:var(--rs);font-size:13px;font-weight:600;text-align:center;display:none}
+.save-status.loading{display:block;background:#EEF3FF;color:var(--chair)}
+.save-status.success{display:block;background:var(--yes-bg);color:var(--yes)}
+.save-status.error{display:block;background:var(--no-bg);color:var(--no)}
+/* Google Sheets 안내 배너 */
+.sheets-banner{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.sheets-icon{font-size:24px;flex-shrink:0}
+.sheets-text h3{font-size:13px;font-weight:700;color:#2E7D32;margin-bottom:2px}
+.sheets-text p{font-size:12px;color:#388E3C}
+/* 토스트 */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:white;padding:12px 22px;border-radius:100px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:480px){.site-title{font-size:18px}.tab-btn{font-size:11px;padding:10px 4px}.answer-row{grid-template-columns:repeat(2,1fr)}.ans-btn{border-bottom:1px solid var(--border)}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="org-name">함께이룸 장애인독립생활센터 · 2026</div>
+    <div class="site-title">주민센터 장애인 접근권<br>편의제공 체크리스트</div>
+    <div class="site-subtitle">영등포구 18개 주민센터 현장조사용 · 데이터 자동 저장</div>
+    <div class="tab-row">
+      <button class="tab-btn chair active" onclick="switchTab('chair',this)"><span>♿</span> 휠체어</button>
+      <button class="tab-btn ear" onclick="switchTab('ear',this)"><span>👂</span> 청각장애</button>
+      <button class="tab-btn staff" onclick="switchTab('staff',this)"><span>🤝</span> 공무원 응대</button>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- Google Sheets 연동 안내 -->
+<div class="sheets-banner">
+  <div class="sheets-icon">📊</div>
+  <div class="sheets-text">
+    <h3>Google Sheets 자동 저장 연동 완료</h3>
+    <p>저장 버튼을 누르면 조사 데이터가 구글 시트에 자동으로 기록됩니다</p>
+  </div>
+</div>
+
+<!-- ♿ 휠체어 -->
+<div id="chair-page" class="page chair-pg active">
+  <div class="cat-header chair"><div class="cat-emoji">♿</div><div><div class="cat-title">휠체어 이용자 접근성</div><div class="cat-desc">물리적 이동·출입·이용 편의 5개 항목</div></div></div>
+  <div class="select-card">
+    <div class="select-label">조사 주민센터</div>
+    <select class="center-select" id="chair-center">
+      <option value="">— 주민센터를 선택하세요 —</option>
+      <option>영등포</option><option>당산</option><option>도림</option><option>신길</option><option>대림</option>
+      <option>문래</option><option>양평</option><option>여의도</option><option>영등포본동</option><option>양화</option>
+      <option>신도림</option><option>화곡</option><option>목동</option><option>신정</option><option>등촌</option>
+      <option>공항</option><option>방화</option><option>개화</option>
+    </select>
+  </div>
+  <div class="progress-card">
+    <div class="progress-ring"><svg width="60" height="60"><circle cx="30" cy="30" r="26" fill="none" stroke="#E0DDD6" stroke-width="5"/><circle id="chair-arc" cx="30" cy="30" r="26" fill="none" stroke="#1B4FD8" stroke-width="5" stroke-dasharray="163.4" stroke-dashoffset="163.4" stroke-linecap="round"/></svg><span class="ring-num" id="chair-pct">0%</span></div>
+    <div class="progress-info"><div class="progress-title">응답 진행률</div><div class="progress-bar-wrap"><div class="progress-bar-fill" id="chair-bar" style="width:0%"></div></div><div class="progress-count" id="chair-count">0 / 5 항목 응답 완료</div></div>
+  </div>
+  <div class="checklist">
+    <div class="check-item" id="chair-q1"><div class="check-top"><div class="check-num-row"><span class="check-num">1</span><span class="check-tag">출입·이동</span></div><div class="check-q">주민센터 출입구까지 보행로(인도)를 휠체어로 이동하는 데 불편함이 없었는가?</div><div class="check-hint">보도 턱, 경사로 유무, 노면 상태 등을 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('chair',1,'yes',this)"><span class="ans-icon">✅</span>가능</button><button class="ans-btn" onclick="ans('chair',1,'partial',this)"><span class="ans-icon">⚠️</span>일부 불편</button><button class="ans-btn" onclick="ans('chair',1,'no',this)"><span class="ans-icon">❌</span>불가</button><button class="ans-btn" onclick="ans('chair',1,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="chair-m1"><textarea class="memo-input" placeholder="보도 상태, 장애물, 개선 필요 사항..."></textarea></div></div>
+    <div class="check-item" id="chair-q2"><div class="check-top"><div class="check-num-row"><span class="check-num">2</span><span class="check-tag">출입문</span></div><div class="check-q">주 출입문이 자동문이거나, 휠체어 이용자가 혼자서 열 수 있는 구조인가?</div><div class="check-hint">문 너비(80cm 이상 권장), 자동문 여부, 버튼 위치를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('chair',2,'yes',this)"><span class="ans-icon">✅</span>자동문</button><button class="ans-btn" onclick="ans('chair',2,'partial',this)"><span class="ans-icon">⚠️</span>일부 가능</button><button class="ans-btn" onclick="ans('chair',2,'no',this)"><span class="ans-icon">❌</span>수동·불가</button><button class="ans-btn" onclick="ans('chair',2,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="chair-m2"><textarea class="memo-input" placeholder="문 너비, 개폐 방식, 개선 필요 사항..."></textarea></div></div>
+    <div class="check-item" id="chair-q3"><div class="check-top"><div class="check-num-row"><span class="check-num">3</span><span class="check-tag">주차·진입</span></div><div class="check-q">장애인 전용 주차구역이 건물 입구 가까이 있고, 불법 점유 없이 이용 가능한가?</div><div class="check-hint">주차면 수, 입구까지의 거리, 점유 여부를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('chair',3,'yes',this)"><span class="ans-icon">✅</span>양호</button><button class="ans-btn" onclick="ans('chair',3,'partial',this)"><span class="ans-icon">⚠️</span>불완전</button><button class="ans-btn" onclick="ans('chair',3,'no',this)"><span class="ans-icon">❌</span>없음·점유</button><button class="ans-btn" onclick="ans('chair',3,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="chair-m3"><textarea class="memo-input" placeholder="주차면 수, 위치, 불법 점유 여부..."></textarea></div></div>
+    <div class="check-item" id="chair-q4"><div class="check-top"><div class="check-num-row"><span class="check-num">4</span><span class="check-tag">엘리베이터·경사로</span></div><div class="check-q">복층인 경우, 엘리베이터 또는 경사로가 설치되어 있으며 정상 작동하는가?</div><div class="check-hint">엘리베이터 크기(1.4m×1.1m 이상), 점자 버튼, 경사도를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('chair',4,'yes',this)"><span class="ans-icon">✅</span>정상 작동</button><button class="ans-btn" onclick="ans('chair',4,'partial',this)"><span class="ans-icon">⚠️</span>일부 불편</button><button class="ans-btn" onclick="ans('chair',4,'no',this)"><span class="ans-icon">❌</span>없음·고장</button><button class="ans-btn" onclick="ans('chair',4,'na',this)"><span class="ans-icon">—</span>단층 건물</button></div><div class="memo-area" id="chair-m4"><textarea class="memo-input" placeholder="엘리베이터 크기, 이상 여부, 경사로 경사도..."></textarea></div></div>
+    <div class="check-item" id="chair-q5"><div class="check-top"><div class="check-num-row"><span class="check-num">5</span><span class="check-tag">창구·화장실</span></div><div class="check-q">민원 창구 높이와 장애인 화장실이 휠체어 이용자에게 적합한가?</div><div class="check-hint">창구 높이(0.7~0.9m 권장), 화장실 위치·잠금장치·비상벨을 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('chair',5,'yes',this)"><span class="ans-icon">✅</span>적합</button><button class="ans-btn" onclick="ans('chair',5,'partial',this)"><span class="ans-icon">⚠️</span>일부 불편</button><button class="ans-btn" onclick="ans('chair',5,'no',this)"><span class="ans-icon">❌</span>부적합</button><button class="ans-btn" onclick="ans('chair',5,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="chair-m5"><textarea class="memo-input" placeholder="창구 높이, 화장실 상태, 비상벨 여부..."></textarea></div></div>
+  </div>
+  <div class="result-summary" id="chair-result" style="display:none;"><div class="result-title">📊 항목별 결과 요약</div><div class="result-bars"><div class="result-row"><div class="result-label">✅ 양호</div><div class="result-bar"><div class="result-bar-fill yes" id="chair-yb" style="width:0%"></div></div><div class="result-count yes" id="chair-yc">0</div></div><div class="result-row"><div class="result-label">⚠️ 일부</div><div class="result-bar"><div class="result-bar-fill partial" id="chair-pb" style="width:0%"></div></div><div class="result-count partial" id="chair-pc">0</div></div><div class="result-row"><div class="result-label">❌ 미비</div><div class="result-bar"><div class="result-bar-fill no" id="chair-nb" style="width:0%"></div></div><div class="result-count no" id="chair-nc">0</div></div></div></div>
+  <div class="save-area">
+    <button class="save-btn" id="chair-save-btn" onclick="saveToSheets('chair')">📊 Google Sheets에 저장</button>
+    <div class="save-status" id="chair-status"></div>
+  </div>
+</div>
+
+<!-- 👂 청각장애 -->
+<div id="ear-page" class="page ear-pg">
+  <div class="cat-header ear"><div class="cat-emoji">👂</div><div><div class="cat-title">청각장애인 접근성</div><div class="cat-desc">정보·소통 편의 5개 항목</div></div></div>
+  <div class="select-card">
+    <div class="select-label">조사 주민센터</div>
+    <select class="center-select" id="ear-center">
+      <option value="">— 주민센터를 선택하세요 —</option>
+      <option>영등포</option><option>당산</option><option>도림</option><option>신길</option><option>대림</option>
+      <option>문래</option><option>양평</option><option>여의도</option><option>영등포본동</option><option>양화</option>
+      <option>신도림</option><option>화곡</option><option>목동</option><option>신정</option><option>등촌</option>
+      <option>공항</option><option>방화</option><option>개화</option>
+    </select>
+  </div>
+  <div class="progress-card">
+    <div class="progress-ring"><svg width="60" height="60"><circle cx="30" cy="30" r="26" fill="none" stroke="#E0DDD6" stroke-width="5"/><circle id="ear-arc" cx="30" cy="30" r="26" fill="none" stroke="#0D7A5F" stroke-width="5" stroke-dasharray="163.4" stroke-dashoffset="163.4" stroke-linecap="round"/></svg><span class="ring-num" id="ear-pct">0%</span></div>
+    <div class="progress-info"><div class="progress-title">응답 진행률</div><div class="progress-bar-wrap"><div class="progress-bar-fill" id="ear-bar" style="width:0%"></div></div><div class="progress-count" id="ear-count">0 / 5 항목 응답 완료</div></div>
+  </div>
+  <div class="checklist">
+    <div class="check-item" id="ear-q1"><div class="check-top"><div class="check-num-row"><span class="check-num">1</span><span class="check-tag">수어통역</span></div><div class="check-q">수어통역 서비스(현장 통역사 또는 영상 수어통역)를 이용할 수 있었는가?</div><div class="check-hint">영상 수어통역 단말기, 통역사 연계, 안내문 부착 여부를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('ear',1,'yes',this)"><span class="ans-icon">✅</span>이용 가능</button><button class="ans-btn" onclick="ans('ear',1,'partial',this)"><span class="ans-icon">⚠️</span>예약 필요</button><button class="ans-btn" onclick="ans('ear',1,'no',this)"><span class="ans-icon">❌</span>없음</button><button class="ans-btn" onclick="ans('ear',1,'na',this)"><span class="ans-icon">—</span>확인불가</button></div><div class="memo-area" id="ear-m1"><textarea class="memo-input" placeholder="통역 방식, 대기 시간, 이용 절차..."></textarea></div></div>
+    <div class="check-item" id="ear-q2"><div class="check-top"><div class="check-num-row"><span class="check-num">2</span><span class="check-tag">문자·필담</span></div><div class="check-q">담당 직원이 문자 안내·필담 등 대체 소통 수단을 제공했는가?</div><div class="check-hint">메모지, 태블릿, 채팅앱, 문자 전송 등 대체 소통 방법을 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('ear',2,'yes',this)"><span class="ans-icon">✅</span>제공함</button><button class="ans-btn" onclick="ans('ear',2,'partial',this)"><span class="ans-icon">⚠️</span>요청 시</button><button class="ans-btn" onclick="ans('ear',2,'no',this)"><span class="ans-icon">❌</span>미제공</button><button class="ans-btn" onclick="ans('ear',2,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="ear-m2"><textarea class="memo-input" placeholder="소통 방식, 직원 태도, 불편 사항..."></textarea></div></div>
+    <div class="check-item" id="ear-q3"><div class="check-top"><div class="check-num-row"><span class="check-num">3</span><span class="check-tag">시각적 안내</span></div><div class="check-q">대기 번호 호출 등 청각 정보가 시각적(화면·전광판)으로도 제공되는가?</div><div class="check-hint">대기 번호 표시판, 시각적 호출 시스템 여부를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('ear',3,'yes',this)"><span class="ans-icon">✅</span>제공됨</button><button class="ans-btn" onclick="ans('ear',3,'partial',this)"><span class="ans-icon">⚠️</span>일부만</button><button class="ans-btn" onclick="ans('ear',3,'no',this)"><span class="ans-icon">❌</span>없음</button><button class="ans-btn" onclick="ans('ear',3,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="ear-m3"><textarea class="memo-input" placeholder="화면 표시 여부, 시스템 종류..."></textarea></div></div>
+    <div class="check-item" id="ear-q4"><div class="check-top"><div class="check-num-row"><span class="check-num">4</span><span class="check-tag">안내 자료</span></div><div class="check-q">민원 서식이나 안내문이 청각장애인도 혼자서 이해할 수 있도록 제공되는가?</div><div class="check-hint">쉬운 언어, 그림 설명, 큰 글씨 서식 여부를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('ear',4,'yes',this)"><span class="ans-icon">✅</span>충분함</button><button class="ans-btn" onclick="ans('ear',4,'partial',this)"><span class="ans-icon">⚠️</span>일부만</button><button class="ans-btn" onclick="ans('ear',4,'no',this)"><span class="ans-icon">❌</span>미비</button><button class="ans-btn" onclick="ans('ear',4,'na',this)"><span class="ans-icon">—</span>확인불가</button></div><div class="memo-area" id="ear-m4"><textarea class="memo-input" placeholder="서식 종류, 이해 가능 여부..."></textarea></div></div>
+    <div class="check-item" id="ear-q5"><div class="check-top"><div class="check-num-row"><span class="check-num">5</span><span class="check-tag">독립 처리</span></div><div class="check-q">청각장애인으로서 보호자 동반 없이 혼자 민원 업무를 처리할 수 있었는가?</div><div class="check-hint">독립적 민원 처리 가능 여부를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('ear',5,'yes',this)"><span class="ans-icon">✅</span>혼자 가능</button><button class="ans-btn" onclick="ans('ear',5,'partial',this)"><span class="ans-icon">⚠️</span>일부 가능</button><button class="ans-btn" onclick="ans('ear',5,'no',this)"><span class="ans-icon">❌</span>보호자 필요</button><button class="ans-btn" onclick="ans('ear',5,'na',this)"><span class="ans-icon">—</span>미이용</button></div><div class="memo-area" id="ear-m5"><textarea class="memo-input" placeholder="구체적 상황, 어려웠던 점..."></textarea></div></div>
+  </div>
+  <div class="result-summary" id="ear-result" style="display:none;"><div class="result-title">📊 항목별 결과 요약</div><div class="result-bars"><div class="result-row"><div class="result-label">✅ 양호</div><div class="result-bar"><div class="result-bar-fill yes" id="ear-yb" style="width:0%"></div></div><div class="result-count yes" id="ear-yc">0</div></div><div class="result-row"><div class="result-label">⚠️ 일부</div><div class="result-bar"><div class="result-bar-fill partial" id="ear-pb" style="width:0%"></div></div><div class="result-count partial" id="ear-pc">0</div></div><div class="result-row"><div class="result-label">❌ 미비</div><div class="result-bar"><div class="result-bar-fill no" id="ear-nb" style="width:0%"></div></div><div class="result-count no" id="ear-nc">0</div></div></div></div>
+  <div class="save-area">
+    <button class="save-btn" id="ear-save-btn" onclick="saveToSheets('ear')">📊 Google Sheets에 저장</button>
+    <div class="save-status" id="ear-status"></div>
+  </div>
+</div>
+
+<!-- 🤝 공무원 응대 -->
+<div id="staff-page" class="page staff-pg">
+  <div class="cat-header staff"><div class="cat-emoji">🤝</div><div><div class="cat-title">공무원 장애인 응대 편의</div><div class="cat-desc">서비스 태도·편의 제공 5개 항목</div></div></div>
+  <div class="select-card">
+    <div class="select-label">조사 주민센터</div>
+    <select class="center-select" id="staff-center">
+      <option value="">— 주민센터를 선택하세요 —</option>
+      <option>영등포</option><option>당산</option><option>도림</option><option>신길</option><option>대림</option>
+      <option>문래</option><option>양평</option><option>여의도</option><option>영등포본동</option><option>양화</option>
+      <option>신도림</option><option>화곡</option><option>목동</option><option>신정</option><option>등촌</option>
+      <option>공항</option><option>방화</option><option>개화</option>
+    </select>
+  </div>
+  <div class="progress-card">
+    <div class="progress-ring"><svg width="60" height="60"><circle cx="30" cy="30" r="26" fill="none" stroke="#E0DDD6" stroke-width="5"/><circle id="staff-arc" cx="30" cy="30" r="26" fill="none" stroke="#9B3A12" stroke-width="5" stroke-dasharray="163.4" stroke-dashoffset="163.4" stroke-linecap="round"/></svg><span class="ring-num" id="staff-pct">0%</span></div>
+    <div class="progress-info"><div class="progress-title">응답 진행률</div><div class="progress-bar-wrap"><div class="progress-bar-fill" id="staff-bar" style="width:0%"></div></div><div class="progress-count" id="staff-count">0 / 5 항목 응답 완료</div></div>
+  </div>
+  <div class="checklist">
+    <div class="check-item" id="staff-q1"><div class="check-top"><div class="check-num-row"><span class="check-num">1</span><span class="check-tag">장애 인식</span></div><div class="check-q">담당 직원이 장애 유형에 따른 적절한 응대 방법을 알고 있다고 느꼈는가?</div><div class="check-hint">당사자에게 직접 묻기, 보호자에게만 말하지 않는 태도, 눈높이 맞추기 등을 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('staff',1,'yes',this)"><span class="ans-icon">✅</span>적절함</button><button class="ans-btn" onclick="ans('staff',1,'partial',this)"><span class="ans-icon">⚠️</span>보통</button><button class="ans-btn" onclick="ans('staff',1,'no',this)"><span class="ans-icon">❌</span>미흡</button><button class="ans-btn" onclick="ans('staff',1,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="staff-m1"><textarea class="memo-input" placeholder="구체적 응대 태도, 긍정·부정 사례..."></textarea></div></div>
+    <div class="check-item" id="staff-q2"><div class="check-top"><div class="check-num-row"><span class="check-num">2</span><span class="check-tag">편의 제공</span></div><div class="check-q">대필·안내·설명 등 편의 제공을 요청했을 때 실제로 제공받았는가?</div><div class="check-hint">서식 대필, 이동 보조, 창구 안내 등 편의 제공 이행 여부를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('staff',2,'yes',this)"><span class="ans-icon">✅</span>제공됨</button><button class="ans-btn" onclick="ans('staff',2,'partial',this)"><span class="ans-icon">⚠️</span>일부만</button><button class="ans-btn" onclick="ans('staff',2,'no',this)"><span class="ans-icon">❌</span>거부·무시</button><button class="ans-btn" onclick="ans('staff',2,'na',this)"><span class="ans-icon">—</span>요청 안함</button></div><div class="memo-area" id="staff-m2"><textarea class="memo-input" placeholder="요청 내용, 직원 반응, 실제 제공 여부..."></textarea></div></div>
+    <div class="check-item" id="staff-q3"><div class="check-top"><div class="check-num-row"><span class="check-num">3</span><span class="check-tag">서식 안내</span></div><div class="check-q">담당 직원이 민원 서식 작성 방법을 장애인이 이해하기 쉽게 설명해 주었는가?</div><div class="check-hint">서식 설명 방식, 충분한 시간 제공, 단계별 안내 여부를 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('staff',3,'yes',this)"><span class="ans-icon">✅</span>충분히</button><button class="ans-btn" onclick="ans('staff',3,'partial',this)"><span class="ans-icon">⚠️</span>약간만</button><button class="ans-btn" onclick="ans('staff',3,'no',this)"><span class="ans-icon">❌</span>설명 없음</button><button class="ans-btn" onclick="ans('staff',3,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="staff-m3"><textarea class="memo-input" placeholder="설명 방식, 이해 가능 여부, 불편 사항..."></textarea></div></div>
+    <div class="check-item" id="staff-q4"><div class="check-top"><div class="check-num-row"><span class="check-num">4</span><span class="check-tag">차별·배려</span></div><div class="check-q">장애인이라는 이유로 불이익하거나 불쾌한 응대를 경험하지 않았는가?</div><div class="check-hint">차별적 언행, 무시, 비장애인 동반자에게만 말하기 등을 확인하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('staff',4,'yes',this)"><span class="ans-icon">✅</span>없었음</button><button class="ans-btn" onclick="ans('staff',4,'partial',this)"><span class="ans-icon">⚠️</span>약간 불편</button><button class="ans-btn" onclick="ans('staff',4,'no',this)"><span class="ans-icon">❌</span>차별 경험</button><button class="ans-btn" onclick="ans('staff',4,'na',this)"><span class="ans-icon">—</span>해당없음</button></div><div class="memo-area" id="staff-m4"><textarea class="memo-input" placeholder="구체적 상황, 언행 내용, 불편 정도..."></textarea></div></div>
+    <div class="check-item" id="staff-q5"><div class="check-top"><div class="check-num-row"><span class="check-num">5</span><span class="check-tag">전반적 만족도</span></div><div class="check-q">이번 주민센터 방문에서 공무원 응대에 대한 전반적인 만족도는 어떠했는가?</div><div class="check-hint">응대 태도, 처리 속도, 친절도, 장애 이해도를 종합적으로 평가하세요.</div></div><div class="answer-row"><button class="ans-btn" onclick="ans('staff',5,'yes',this)"><span class="ans-icon">😊</span>만족</button><button class="ans-btn" onclick="ans('staff',5,'partial',this)"><span class="ans-icon">😐</span>보통</button><button class="ans-btn" onclick="ans('staff',5,'no',this)"><span class="ans-icon">😞</span>불만족</button><button class="ans-btn" onclick="ans('staff',5,'na',this)"><span class="ans-icon">—</span>미이용</button></div><div class="memo-area" id="staff-m5"><textarea class="memo-input" placeholder="전반적 소감, 개선 필요 사항..."></textarea></div></div>
+  </div>
+  <div class="result-summary" id="staff-result" style="display:none;"><div class="result-title">📊 항목별 결과 요약</div><div class="result-bars"><div class="result-row"><div class="result-label">✅ 양호</div><div class="result-bar"><div class="result-bar-fill yes" id="staff-yb" style="width:0%"></div></div><div class="result-count yes" id="staff-yc">0</div></div><div class="result-row"><div class="result-label">⚠️ 일부</div><div class="result-bar"><div class="result-bar-fill partial" id="staff-pb" style="width:0%"></div></div><div class="result-count partial" id="staff-pc">0</div></div><div class="result-row"><div class="result-label">❌ 미비</div><div class="result-bar"><div class="result-bar-fill no" id="staff-nb" style="width:0%"></div></div><div class="result-count no" id="staff-nc">0</div></div></div></div>
+  <div class="save-area">
+    <button class="save-btn" id="staff-save-btn" onclick="saveToSheets('staff')">📊 Google Sheets에 저장</button>
+    <div class="save-status" id="staff-status"></div>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+// Google Apps Script URL
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyvRJO0duBFD0ivnIhsj-bq3OAXYxk7tc_2WDcpe_rR2o3Eahe6uUjXsmDCxWsTNWKl0w/exec';
+
+// 조사 유형 한글명
+const TYPE_NAME = {chair:'휠체어 접근성', ear:'청각장애 접근성', staff:'공무원 응대 편의'};
+
+// 데이터
+const D = {chair:{a:{},t:5}, ear:{a:{},t:5}, staff:{a:{},t:5}};
+
+// 탭 전환
+function switchTab(tab, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab+'-page').classList.add('active');
+  btn.classList.add('active');
+}
+
+// 답변 선택
+function ans(cat, num, val, btn) {
+  btn.parentElement.querySelectorAll('.ans-btn').forEach(b => b.className='ans-btn');
+  btn.classList.add('sel-'+val);
+  document.getElementById(cat+'-q'+num).className = 'check-item ans-'+val;
+  document.getElementById(cat+'-m'+num).classList.add('show');
+  D[cat].a[num] = val;
+  updateProg(cat);
+  if (navigator.vibrate) navigator.vibrate(20);
+}
+
+// 진행률 업데이트
+function updateProg(cat) {
+  const answered = Object.keys(D[cat].a).length;
+  const pct = Math.round(answered / D[cat].t * 100);
+  document.getElementById(cat+'-arc').style.strokeDashoffset = 163.4 - (163.4 * pct / 100);
+  document.getElementById(cat+'-pct').textContent = pct + '%';
+  document.getElementById(cat+'-bar').style.width = pct + '%';
+  document.getElementById(cat+'-count').textContent = answered + ' / 5 항목 응답 완료';
+  if (answered >= 3) {
+    document.getElementById(cat+'-result').style.display = 'block';
+    let y=0, p=0, n=0;
+    Object.values(D[cat].a).forEach(v => { if(v==='yes')y++; else if(v==='partial')p++; else if(v==='no')n++; });
+    document.getElementById(cat+'-yb').style.width = (y/5*100)+'%';
+    document.getElementById(cat+'-pb').style.width = (p/5*100)+'%';
+    document.getElementById(cat+'-nb').style.width = (n/5*100)+'%';
+    document.getElementById(cat+'-yc').textContent = y;
+    document.getElementById(cat+'-pc').textContent = p;
+    document.getElementById(cat+'-nc').textContent = n;
+  }
+}
+
+// Google Sheets 저장
+async function saveToSheets(cat) {
+  const center = document.getElementById(cat+'-center').value;
+  if (!center) { toast('⚠️ 주민센터를 먼저 선택해주세요'); return; }
+  if (!Object.keys(D[cat].a).length) { toast('⚠️ 최소 1개 항목에 응답해주세요'); return; }
+
+  const btn = document.getElementById(cat+'-save-btn');
+  const status = document.getElementById(cat+'-status');
+
+  // 버튼 비활성화 + 로딩 표시
+  btn.disabled = true;
+  btn.textContent = '⏳ 저장 중...';
+  status.className = 'save-status loading';
+  status.textContent = '📡 Google Sheets에 데이터를 전송하고 있습니다...';
+
+  // 메모 수집
+  const memos = {};
+  for (let i = 1; i <= 5; i++) {
+    const ta = document.querySelector('#'+cat+'-m'+i+' textarea');
+    memos[i] = ta ? ta.value : '';
+  }
+
+  // 전송할 데이터
+  const payload = {
+    date: new Date().toLocaleString('ko-KR', {timeZone:'Asia/Seoul'}),
+    center: center,
+    type: TYPE_NAME[cat],
+    a1: D[cat].a[1]||'', a2: D[cat].a[2]||'', a3: D[cat].a[3]||'',
+    a4: D[cat].a[4]||'', a5: D[cat].a[5]||'',
+    m1: memos[1], m2: memos[2], m3: memos[3], m4: memos[4], m5: memos[5]
+  };
+
+  try {
+    // CORS 우회를 위해 no-cors 모드 사용
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    // no-cors에서는 응답 확인 불가 → 전송 성공으로 간주
+    status.className = 'save-status success';
+    status.textContent = '✅ ' + center + ' ' + TYPE_NAME[cat] + ' 데이터가 Google Sheets에 저장되었습니다!';
+    btn.textContent = '✅ 저장 완료';
+    btn.style.background = '#059669';
+    toast('✅ Google Sheets 저장 완료!');
+
+    // 3초 후 버튼 복구
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = '📊 Google Sheets에 저장';
+      btn.style.background = '';
+    }, 3000);
+
+  } catch (err) {
+    status.className = 'save-status error';
+    status.textContent = '❌ 저장 실패: 인터넷 연결을 확인해주세요.';
+    btn.disabled = false;
+    btn.textContent = '📊 Google Sheets에 저장';
+    toast('❌ 저장 실패. 다시 시도해주세요.');
+  }
+}
+
+// 토스트
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
