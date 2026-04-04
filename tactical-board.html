@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>파워사커 작전판 | 함께이룸</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #0d47a1, #1565c0);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+    }
+    .header-icon { font-size: 2rem; }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header p { font-size: 0.72rem; color: rgba(255,255,255,0.65); margin-top: 2px; }
+    .header-back {
+      margin-left: auto;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.78rem;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .header-back:hover { background: rgba(255,255,255,0.1); }
+
+    .main {
+      width: 100%;
+      max-width: 900px;
+      padding: 14px 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .toolbar-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .sep { width: 1px; height: 26px; background: #30363d; margin: 0 2px; flex-shrink: 0; }
+
+    .btn {
+      padding: 6px 11px;
+      border: 1px solid #30363d;
+      border-radius: 7px;
+      background: #21262d;
+      color: #cdd9e5;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn:hover { background: #30363d; }
+    .btn.active { background: #1f6feb; border-color: #388bfd; color: #fff; }
+    .btn.red { border-color: #6e2020; color: #f85149; }
+    .btn.red:hover { background: #da3633; border-color: #da3633; color: #fff; }
+
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      color: #8b949e;
+    }
+    input[type="color"] {
+      width: 28px;
+      height: 26px;
+      border: 1px solid #30363d;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 2px;
+      background: #21262d;
+    }
+    select {
+      padding: 4px 7px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #cdd9e5;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .field-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.6);
+    }
+    #field-canvas { display: block; width: 100%; height: auto; }
+    #draw-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    .player {
+      position: absolute;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1;
+      cursor: grab;
+      border: 3px solid rgba(255,255,255,0.8);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.55);
+      user-select: none;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      touch-action: none;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      transition: box-shadow 0.1s, transform 0.1s;
+    }
+    .player:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+      transform: translate(-50%, -50%) scale(1.12);
+    }
+    .player.dragging {
+      cursor: grabbing;
+      transform: translate(-50%, -50%) scale(1.18);
+      z-index: 30;
+      transition: none;
+    }
+    .player.team-a { background: radial-gradient(circle at 38% 35%, #ff7675, #c0392b); }
+    .player.team-b { background: radial-gradient(circle at 38% 35%, #74b9ff, #2980b9); }
+    .player.is-gk { border-color: #f1c40f; border-width: 4px; }
+    .player .p-sub { font-size: 0.52rem; color: rgba(255,255,255,0.85); line-height: 1.2; }
+
+    .legend {
+      margin-top: 8px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 8px 12px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: #8b949e;
+      align-items: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .lc {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.55);
+      flex-shrink: 0;
+    }
+    .lc.gk { border-color: #f1c40f; border-width: 3px; }
+
+    @media (max-width: 500px) {
+      .sep { display: none; }
+      .toolbar { gap: 5px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">⚽</div>
+  <div>
+    <h1>파워사커 작전판</h1>
+    <p>전동휠체어 축구 (4 vs 4) · Power Soccer Tactical Board</p>
+  </div>
+  <a class="header-back" href="index.html">← 메인으로</a>
+</header>
+
+<div class="main">
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <button class="btn active" id="btn-select" onclick="setTool('select')">↖ 선수이동</button>
+      <button class="btn" id="btn-arrow" onclick="setTool('arrow')">➜ 화살표</button>
+      <button class="btn" id="btn-line" onclick="setTool('line')">— 선</button>
+      <button class="btn" id="btn-erase" onclick="setTool('erase')">◻ 지우개</button>
+    </div>
+    <div class="sep"></div>
+    <div class="color-row">
+      <span>색상</span>
+      <input type="color" id="draw-color" value="#ffffff" oninput="drawColor = this.value">
+    </div>
+    <div class="color-row">
+      <span>굵기</span>
+      <select id="line-width" onchange="lineWidth = parseInt(this.value)">
+        <option value="2">얇게</option>
+        <option value="3" selected>보통</option>
+        <option value="5">굵게</option>
+      </select>
+    </div>
+    <div class="sep"></div>
+    <div class="toolbar-group" style="margin-left:auto;">
+      <button class="btn" onclick="undo()">↩ 되돌리기</button>
+      <button class="btn red" onclick="clearDrawing()">🗑 선 지우기</button>
+      <button class="btn red" onclick="resetPositions()">⟳ 위치 초기화</button>
+    </div>
+  </div>
+
+  <div class="field-wrapper" id="field-wrapper">
+    <canvas id="field-canvas"></canvas>
+    <canvas id="draw-canvas"></canvas>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="lc" style="background:radial-gradient(circle at 38% 35%,#ff7675,#c0392b)"></div>
+      <span>팀 A (빨강) — 선수 드래그로 이동</span>
+    </div>
+    <div class="legend-item">
+      <div class="lc" style="background:radial-gradient(circle at 38% 35%,#74b9ff,#2980b9)"></div>
+      <span>팀 B (파랑)</span>
+    </div>
+    <div class="legend-item">
+      <div class="lc gk" style="background:radial-gradient(circle at 38% 35%,#ff7675,#c0392b)"></div>
+      <span>GK (노란 테두리)</span>
+    </div>
+    <div class="legend-item" style="color:#cdd9e5;">
+      <span>전술선: 화살표/선 선택 후 드래그</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fieldCanvas = document.getElementById('field-canvas');
+  const drawCanvas  = document.getElementById('draw-canvas');
+  const wrapper     = document.getElementById('field-wrapper');
+  const fCtx = fieldCanvas.getContext('2d');
+  const dCtx = drawCanvas.getContext('2d');
+
+  const LW = 800, LH = 480;
+  fieldCanvas.width = LW;
+  fieldCanvas.height = LH;
+  drawCanvas.width  = LW;
+  drawCanvas.height = LH;
+
+  let currentTool = 'select';
+  let drawColor   = '#ffffff';
+  let lineWidth   = 3;
+  let undoStack   = [];
+  let isDrawing   = false;
+  let startPt     = null;
+  let snapshot    = null;
+  let didMove     = false;
+
+  // ── Player Definitions ───────────────────────────────────────────
+  const PLAYERS_DEF = [
+    { id:'a1', team:'a', num:'1', isGK:true  },
+    { id:'a2', team:'a', num:'2', isGK:false },
+    { id:'a3', team:'a', num:'3', isGK:false },
+    { id:'a4', team:'a', num:'4', isGK:false },
+    { id:'b1', team:'b', num:'1', isGK:true  },
+    { id:'b2', team:'b', num:'2', isGK:false },
+    { id:'b3', team:'b', num:'3', isGK:false },
+    { id:'b4', team:'b', num:'4', isGK:false },
+  ];
+
+  const DEFAULT_POS = {
+    a1: { x:0.063, y:0.50 },
+    a2: { x:0.220, y:0.27 },
+    a3: { x:0.220, y:0.73 },
+    a4: { x:0.380, y:0.50 },
+    b1: { x:0.937, y:0.50 },
+    b2: { x:0.780, y:0.27 },
+    b3: { x:0.780, y:0.73 },
+    b4: { x:0.620, y:0.50 },
+  };
+
+  let pos = JSON.parse(JSON.stringify(DEFAULT_POS));
+
+  // ── Field Drawing ─────────────────────────────────────────────────
+  function drawField() {
+    const ctx = fCtx;
+    const W = LW, H = LH;
+
+    // Grass background
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0,   '#1b5e20');
+    g.addColorStop(0.5, '#2e7d32');
+    g.addColorStop(1,   '#1b5e20');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    // Alternating grass stripes
+    ctx.save();
+    for (let i = 0; i < 8; i++) {
+      if (i % 2 === 0) {
+        ctx.fillStyle = 'rgba(0,0,0,0.07)';
+        ctx.fillRect(i * W / 8, 0, W / 8, H);
+      }
+    }
+    ctx.restore();
+
+    const pad = 28;
+    const fw = W - pad * 2, fh = H - pad * 2;
+    const fx = pad, fy = pad;
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth   = 2.5;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+
+    // Outer boundary
+    ctx.strokeRect(fx, fy, fw, fh);
+
+    // Center line
+    ctx.beginPath();
+    ctx.moveTo(W / 2, fy);
+    ctx.lineTo(W / 2, fy + fh);
+    ctx.stroke();
+
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2, fh * 0.17, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Center dot
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Penalty boxes
+    const pbW = fw * 0.175, pbH = fh * 0.52;
+    const pbY = H / 2 - pbH / 2;
+    ctx.strokeRect(fx,            pbY, pbW, pbH);
+    ctx.strokeRect(fx + fw - pbW, pbY, pbW, pbH);
+
+    // Penalty spots
+    const spotOff = pbW * 0.65;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    [[fx + spotOff, H / 2], [fx + fw - spotOff, H / 2]].forEach(([sx, sy]) => {
+      ctx.beginPath();
+      ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Goals
+    ctx.lineWidth   = 3;
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+    const gW = 18, gH = fh * 0.22, gY = H / 2 - (fh * 0.22) / 2;
+
+    ctx.beginPath();
+    ctx.moveTo(fx, gY);
+    ctx.lineTo(fx - gW, gY);
+    ctx.lineTo(fx - gW, gY + gH);
+    ctx.lineTo(fx, gY + gH);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(fx + fw, gY);
+    ctx.lineTo(fx + fw + gW, gY);
+    ctx.lineTo(fx + fw + gW, gY + gH);
+    ctx.lineTo(fx + fw, gY + gH);
+    ctx.stroke();
+
+    // Corner arcs
+    ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+    ctx.lineWidth   = 2;
+    const cr = 14;
+    [
+      [fx,      fy,      0,           Math.PI / 2      ],
+      [fx + fw, fy,      Math.PI / 2, Math.PI          ],
+      [fx,      fy + fh, -Math.PI / 2, 0               ],
+      [fx + fw, fy + fh, Math.PI,     3 * Math.PI / 2  ],
+    ].forEach(([cx, cy, sa, ea]) => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, cr, sa, ea);
+      ctx.stroke();
+    });
+
+    // Team labels
+    ctx.font      = 'bold 13px "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText('팀 A', fx + fw * 0.15, fy - 10);
+    ctx.fillText('팀 B', fx + fw * 0.85, fy - 10);
+  }
+
+  // ── Player Elements ───────────────────────────────────────────────
+  function createPlayers() {
+    PLAYERS_DEF.forEach(p => {
+      const el = document.createElement('div');
+      el.className = `player team-${p.team}${p.isGK ? ' is-gk' : ''}`;
+      el.id = `player-${p.id}`;
+      el.innerHTML = `${p.num}${p.isGK ? '<div class="p-sub">GK</div>' : ''}`;
+      el.dataset.id = p.id;
+      wrapper.appendChild(el);
+      setupPlayerDrag(el, p.id);
+    });
+    updateAllPositions();
+  }
+
+  function updateAllPositions() {
+    PLAYERS_DEF.forEach(p => {
+      const el = document.getElementById(`player-${p.id}`);
+      el.style.left = (pos[p.id].x * 100) + '%';
+      el.style.top  = (pos[p.id].y * 100) + '%';
+    });
+  }
+
+  function setupPlayerDrag(el, id) {
+    let dragging = false;
+    let offX = 0, offY = 0;
+
+    function onStart(cx, cy) {
+      if (currentTool !== 'select') return;
+      dragging = true;
+      el.classList.add('dragging');
+      const r = wrapper.getBoundingClientRect();
+      offX = cx - r.left - pos[id].x * r.width;
+      offY = cy - r.top  - pos[id].y * r.height;
+    }
+
+    function onMove(cx, cy) {
+      if (!dragging) return;
+      const r = wrapper.getBoundingClientRect();
+      let nx = (cx - r.left - offX) / r.width;
+      let ny = (cy - r.top  - offY) / r.height;
+      nx = Math.max(0.02, Math.min(0.98, nx));
+      ny = Math.max(0.02, Math.min(0.98, ny));
+      pos[id] = { x: nx, y: ny };
+      el.style.left = (nx * 100) + '%';
+      el.style.top  = (ny * 100) + '%';
+    }
+
+    function onEnd() {
+      dragging = false;
+      el.classList.remove('dragging');
+    }
+
+    el.addEventListener('mousedown', e => {
+      if (currentTool !== 'select') return;
+      e.preventDefault(); e.stopPropagation();
+      onStart(e.clientX, e.clientY);
+      const mm = e2 => onMove(e2.clientX, e2.clientY);
+      const mu = ()  => { onEnd(); document.removeEventListener('mousemove', mm); document.removeEventListener('mouseup', mu); };
+      document.addEventListener('mousemove', mm);
+      document.addEventListener('mouseup',   mu);
+    });
+
+    el.addEventListener('touchstart', e => {
+      if (currentTool !== 'select') return;
+      e.preventDefault(); e.stopPropagation();
+      const t = e.touches[0];
+      onStart(t.clientX, t.clientY);
+      const tm = e2 => { const t2 = e2.touches[0]; onMove(t2.clientX, t2.clientY); };
+      const te = ()  => { onEnd(); el.removeEventListener('touchmove', tm); el.removeEventListener('touchend', te); };
+      el.addEventListener('touchmove', tm, { passive: false });
+      el.addEventListener('touchend',  te);
+    }, { passive: false });
+  }
+
+  // ── Tool Management ───────────────────────────────────────────────
+  function setTool(tool) {
+    currentTool = tool;
+    ['select','arrow','line','erase'].forEach(t =>
+      document.getElementById(`btn-${t}`).classList.toggle('active', t === tool)
+    );
+    if (tool === 'select') {
+      drawCanvas.style.pointerEvents = 'none';
+      drawCanvas.style.cursor = 'default';
+    } else {
+      drawCanvas.style.pointerEvents = 'all';
+      drawCanvas.style.cursor = tool === 'erase' ? 'cell' : 'crosshair';
+    }
+  }
+
+  // ── Coordinate Helper ─────────────────────────────────────────────
+  function getCanvasXY(e) {
+    const rect = drawCanvas.getBoundingClientRect();
+    const src  = e.touches ? e.touches[0] : e;
+    return {
+      x: (src.clientX - rect.left) * (LW / rect.width),
+      y: (src.clientY - rect.top)  * (LH / rect.height),
+    };
+  }
+
+  // ── Drawing Primitives ────────────────────────────────────────────
+  function renderArrow(ctx, x1, y1, x2, y2, color, lw) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    if (len < 6) return;
+    const angle    = Math.atan2(dy, dx);
+    const headLen  = Math.min(28, len * 0.32);
+    const headAng  = Math.PI / 7;
+
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle   = color;
+    ctx.lineWidth   = lw;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,0.45)';
+    ctx.shadowBlur  = 4;
+
+    // Shaft
+    const sx = x2 - headLen * 0.65 * Math.cos(angle);
+    const sy = y2 - headLen * 0.65 * Math.sin(angle);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(sx, sy);
+    ctx.stroke();
+
+    // Head
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - headLen * Math.cos(angle - headAng), y2 - headLen * Math.sin(angle - headAng));
+    ctx.lineTo(x2 - headLen * Math.cos(angle + headAng), y2 - headLen * Math.sin(angle + headAng));
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function renderLine(ctx, x1, y1, x2, y2, color, lw) {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = lw;
+    ctx.lineCap     = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,0.45)';
+    ctx.shadowBlur  = 4;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Canvas Events ─────────────────────────────────────────────────
+  drawCanvas.addEventListener('mousedown', onDrawStart);
+  drawCanvas.addEventListener('touchstart', onDrawStart, { passive: false });
+
+  function onDrawStart(e) {
+    e.preventDefault();
+    if (currentTool === 'select') return;
+    isDrawing = true;
+    didMove   = false;
+    startPt   = getCanvasXY(e);
+    snapshot  = dCtx.getImageData(0, 0, LW, LH);
+
+    if (e.type === 'mousedown') {
+      document.addEventListener('mousemove', onDrawMove);
+      document.addEventListener('mouseup',   onDrawEnd);
+    } else {
+      drawCanvas.addEventListener('touchmove', onDrawMove, { passive: false });
+      drawCanvas.addEventListener('touchend',  onDrawEnd);
+    }
+  }
+
+  function onDrawMove(e) {
+    e.preventDefault();
+    if (!isDrawing) return;
+    didMove = true;
+    const pt = getCanvasXY(e);
+    const lw = lineWidth;
+
+    if (currentTool === 'erase') {
+      dCtx.save();
+      dCtx.globalCompositeOperation = 'destination-out';
+      dCtx.beginPath();
+      dCtx.arc(pt.x, pt.y, 20, 0, Math.PI * 2);
+      dCtx.fill();
+      dCtx.restore();
+    } else {
+      // Live preview: restore snapshot, then draw
+      dCtx.putImageData(snapshot, 0, 0);
+      if (currentTool === 'arrow') {
+        renderArrow(dCtx, startPt.x, startPt.y, pt.x, pt.y, drawColor, lw);
+      } else {
+        renderLine(dCtx, startPt.x, startPt.y, pt.x, pt.y, drawColor, lw);
+      }
+    }
+  }
+
+  function onDrawEnd(e) {
+    if (didMove && snapshot) undoStack.push(snapshot);
+    isDrawing = false;
+    didMove   = false;
+    startPt   = null;
+    snapshot  = null;
+    document.removeEventListener('mousemove', onDrawMove);
+    document.removeEventListener('mouseup',   onDrawEnd);
+    drawCanvas.removeEventListener('touchmove', onDrawMove);
+    drawCanvas.removeEventListener('touchend',  onDrawEnd);
+  }
+
+  // ── Action Buttons ────────────────────────────────────────────────
+  function undo() {
+    if (undoStack.length === 0) return;
+    dCtx.putImageData(undoStack.pop(), 0, 0);
+  }
+
+  function clearDrawing() {
+    const current = dCtx.getImageData(0, 0, LW, LH);
+    undoStack.push(current);
+    dCtx.clearRect(0, 0, LW, LH);
+  }
+
+  function resetPositions() {
+    pos = JSON.parse(JSON.stringify(DEFAULT_POS));
+    updateAllPositions();
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────
+  drawField();
+  createPlayers();
+  setTool('select');
+</script>
+</body>
+</html>
