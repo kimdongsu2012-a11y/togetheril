@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>한국어 → 영어 번역기 | 함께이룸</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
+:root {
+  --bg: #F7F5F0;
+  --white: #FFFFFF;
+  --ink: #1A1A1A;
+  --ink-light: #555;
+  --ink-muted: #999;
+  --border: #E0DDD6;
+  --primary: #1B4FD8;
+  --primary-light: #EEF3FF;
+  --primary-dark: #1340B5;
+  --success: #059669;
+  --success-bg: #ECFDF5;
+  --r: 16px;
+  --rs: 10px;
+  --sh: 0 2px 16px rgba(0,0,0,0.07);
+  --sh-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Noto Sans KR', 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Header */
+.site-header {
+  background: var(--ink);
+  color: white;
+  padding: 0 20px;
+}
+.header-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 0 20px;
+}
+.org-name {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .15em;
+  opacity: .5;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.site-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lang-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: .7;
+}
+.lang-badge span { font-size: 16px; }
+
+/* Main */
+.main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px 20px 100px;
+}
+@media (min-width: 768px) {
+  .main { padding: 36px 32px 120px; }
+}
+
+/* Translator Card */
+.translator-card {
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--sh-lg);
+  overflow: hidden;
+}
+
+/* Input/Output sections */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .panels { grid-template-columns: 1fr 1fr; }
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.panel-input { border-bottom: 1px solid var(--border); }
+@media (min-width: 768px) {
+  .panel-input { border-right: 1px solid var(--border); border-bottom: none; }
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+@media (min-width: 768px) {
+  .panel-header { padding: 18px 24px 14px; }
+}
+.lang-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-light);
+}
+.lang-flag { font-size: 22px; }
+.lang-name { letter-spacing: .03em; }
+
+.char-count {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.char-count.warn { color: #D97706; }
+
+.panel-body { flex: 1; position: relative; }
+
+textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  padding: 20px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--ink);
+  background: transparent;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+}
+@media (min-width: 768px) {
+  textarea { min-height: 280px; padding: 24px; font-size: 18px; }
+}
+textarea::placeholder { color: var(--ink-muted); }
+
+.output-text {
+  padding: 20px;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--ink);
+  min-height: 200px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  -webkit-overflow-scrolling: touch;
+}
+@media (min-width: 768px) {
+  .output-text { min-height: 280px; padding: 24px; font-size: 18px; }
+}
+.output-placeholder {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* Action bar */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .divider { padding: 18px 28px; gap: 16px; }
+}
+
+.translate-btn {
+  flex: 1;
+  max-width: 220px;
+  min-height: 52px;
+  padding: 14px 28px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  touch-action: manipulation;
+}
+@media (min-width: 768px) {
+  .translate-btn { max-width: 260px; min-height: 56px; font-size: 17px; }
+}
+.translate-btn:active:not(:disabled) {
+  background: var(--primary-dark);
+  transform: scale(.97);
+}
+.translate-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  box-shadow: 0 4px 16px rgba(27,79,216,.3);
+}
+.translate-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.clear-btn, .copy-btn {
+  min-height: 48px;
+  padding: 12px 18px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-light);
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+@media (min-width: 768px) {
+  .clear-btn, .copy-btn { min-height: 52px; padding: 14px 22px; font-size: 15px; }
+}
+.clear-btn:active { background: #FEF2F2; border-color: #FECACA; color: #DC2626; }
+.clear-btn:hover { background: #FEF2F2; border-color: #FECACA; color: #DC2626; }
+.copy-btn:active { background: var(--success-bg); border-color: #A7F3D0; color: var(--success); }
+.copy-btn:hover { background: var(--success-bg); border-color: #A7F3D0; color: var(--success); }
+.copy-btn:disabled { opacity: .4; }
+
+/* Loading spinner */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  display: none;
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Error */
+.error-msg {
+  padding: 12px 18px;
+  background: #FEF2F2;
+  color: #DC2626;
+  font-size: 13px;
+  font-weight: 600;
+  display: none;
+  border-top: 1px solid #FECACA;
+}
+.error-msg.show { display: block; }
+
+/* Examples */
+.examples-section {
+  margin-top: 28px;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.chip {
+  min-height: 44px;
+  padding: 10px 16px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-light);
+  cursor: pointer;
+  transition: all .15s;
+  box-shadow: var(--sh);
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .chip { min-height: 48px; font-size: 15px; padding: 12px 20px; }
+}
+.chip:active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+.chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* History */
+.history-section {
+  margin-top: 36px;
+}
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.history-item {
+  background: var(--white);
+  border-radius: var(--rs);
+  padding: 16px 20px;
+  box-shadow: var(--sh);
+  cursor: pointer;
+  transition: all .15s;
+  border: 1.5px solid transparent;
+  touch-action: manipulation;
+  min-height: 72px;
+}
+@media (min-width: 768px) {
+  .history-item { padding: 20px 24px; }
+}
+.history-item:active, .history-item:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.history-ko {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.history-en {
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+.history-time {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-top: 8px;
+}
+.history-empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--ink-muted);
+  font-size: 15px;
+  background: var(--white);
+  border-radius: var(--rs);
+  box-shadow: var(--sh);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: white;
+  padding: 12px 22px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all .3s;
+  z-index: 999;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Shortcut hint */
+.shortcut-hint {
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-align: center;
+  margin-top: 10px;
+}
+kbd {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--bg);
+  font-family: monospace;
+}
+
+/* iPad specific header */
+@media (min-width: 768px) {
+  .header-inner { padding: 28px 0 24px; }
+  .org-name { font-size: 12px; }
+  .site-title { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="org-name">함께이룸 · 번역 도구</div>
+    <div class="site-title">
+      한국어 → 영어 번역기
+      <span class="lang-badge"><span>🇰🇷</span> → <span>🇺🇸</span></span>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="translator-card">
+    <div class="panels">
+      <!-- 한국어 입력 -->
+      <div class="panel panel-input">
+        <div class="panel-header">
+          <div class="lang-label">
+            <span class="lang-flag">🇰🇷</span>
+            <span class="lang-name">한국어</span>
+          </div>
+          <span class="char-count" id="char-count">0 / 500</span>
+        </div>
+        <div class="panel-body">
+          <textarea
+            id="input-text"
+            placeholder="번역할 한국어 텍스트를 입력하세요..."
+            maxlength="500"
+            oninput="onInput()"
+            onkeydown="onKeyDown(event)"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- 영어 출력 -->
+      <div class="panel panel-output">
+        <div class="panel-header">
+          <div class="lang-label">
+            <span class="lang-flag">🇺🇸</span>
+            <span class="lang-name">English</span>
+          </div>
+        </div>
+        <div class="panel-body" style="position:relative">
+          <div class="output-text" id="output-text">
+            <span class="output-placeholder">번역 결과가 여기에 표시됩니다</span>
+          </div>
+          <div class="loading-overlay" id="loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="error-msg"></div>
+
+    <!-- Action bar -->
+    <div class="divider">
+      <button class="clear-btn" onclick="clearAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        지우기
+      </button>
+      <button class="translate-btn" id="translate-btn" onclick="translate()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h7M7 2v3M21 15h-3.5a3.5 3.5 0 000 7H21v-7zM21 15V9l-5 3 5 3z"/></svg>
+        번역하기
+      </button>
+      <button class="copy-btn" id="copy-btn" onclick="copyResult()" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        복사
+      </button>
+    </div>
+  </div>
+
+  <p class="shortcut-hint" id="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> 로 빠르게 번역</p>
+
+  <!-- 예시 문장 -->
+  <div class="examples-section">
+    <div class="section-title">예시 문장</div>
+    <div class="example-chips">
+      <button class="chip" onclick="setExample('안녕하세요, 만나서 반갑습니다.')">안녕하세요, 만나서 반갑습니다.</button>
+      <button class="chip" onclick="setExample('오늘 날씨가 정말 좋네요.')">오늘 날씨가 정말 좋네요.</button>
+      <button class="chip" onclick="setExample('이 서류를 어디에 제출해야 하나요?')">이 서류를 어디에 제출해야 하나요?</button>
+      <button class="chip" onclick="setExample('휠체어 이용자를 위한 경사로가 있나요?')">휠체어 이용자를 위한 경사로가 있나요?</button>
+      <button class="chip" onclick="setExample('수어통역 서비스를 요청하고 싶습니다.')">수어통역 서비스를 요청하고 싶습니다.</button>
+      <button class="chip" onclick="setExample('장애인 편의시설을 안내해 주세요.')">장애인 편의시설을 안내해 주세요.</button>
+    </div>
+  </div>
+
+  <!-- 번역 기록 -->
+  <div class="history-section">
+    <div class="section-title">번역 기록</div>
+    <div class="history-list" id="history-list">
+      <div class="history-empty">번역 기록이 없습니다</div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const MAX_CHARS = 500;
+let history = [];
+let currentResult = '';
+
+// 터치 기기(아이패드/아이폰)면 단축키 힌트 숨기기
+if ('ontouchstart' in window) {
+  const hint = document.getElementById('shortcut-hint');
+  if (hint) hint.style.display = 'none';
+}
+
+function onInput() {
+  const val = document.getElementById('input-text').value;
+  const count = val.length;
+  const el = document.getElementById('char-count');
+  el.textContent = count + ' / ' + MAX_CHARS;
+  el.className = 'char-count' + (count > 400 ? ' warn' : '');
+}
+
+function onKeyDown(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    translate();
+  }
+}
+
+function clearAll() {
+  document.getElementById('input-text').value = '';
+  document.getElementById('output-text').innerHTML = '<span class="output-placeholder">번역 결과가 여기에 표시됩니다</span>';
+  document.getElementById('char-count').textContent = '0 / ' + MAX_CHARS;
+  document.getElementById('char-count').className = 'char-count';
+  document.getElementById('copy-btn').disabled = true;
+  document.getElementById('error-msg').className = 'error-msg';
+  currentResult = '';
+}
+
+function setExample(text) {
+  document.getElementById('input-text').value = text;
+  onInput();
+  translate();
+}
+
+async function translate() {
+  const text = document.getElementById('input-text').value.trim();
+  if (!text) { toast('⚠️ 번역할 텍스트를 입력해주세요'); return; }
+
+  const btn = document.getElementById('translate-btn');
+  const loading = document.getElementById('loading');
+  const errorEl = document.getElementById('error-msg');
+
+  btn.disabled = true;
+  loading.classList.add('show');
+  errorEl.className = 'error-msg';
+  document.getElementById('output-text').innerHTML = '';
+
+  try {
+    const encoded = encodeURIComponent(text);
+    const url = 'https://api.mymemory.translated.net/get?q=' + encoded + '&langpair=ko|en&de=kimdongsu2012@gmail.com';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('네트워크 오류');
+    const data = await res.json();
+
+    if (data.responseStatus !== 200) {
+      throw new Error(data.responseDetails || '번역 실패');
+    }
+
+    const translated = data.responseData.translatedText;
+    currentResult = translated;
+    document.getElementById('output-text').textContent = translated;
+    document.getElementById('copy-btn').disabled = false;
+
+    addHistory(text, translated);
+  } catch (err) {
+    errorEl.textContent = '❌ 번역 중 오류가 발생했습니다: ' + err.message;
+    errorEl.className = 'error-msg show';
+    document.getElementById('output-text').innerHTML = '';
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove('show');
+  }
+}
+
+function copyResult() {
+  if (!currentResult) return;
+  navigator.clipboard.writeText(currentResult).then(() => {
+    toast('✅ 클립보드에 복사되었습니다');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = currentResult;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('✅ 복사되었습니다');
+  });
+}
+
+function addHistory(ko, en) {
+  const now = new Date();
+  const time = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+  history.unshift({ ko, en, time });
+  if (history.length > 10) history.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!history.length) {
+    list.innerHTML = '<div class="history-empty">번역 기록이 없습니다</div>';
+    return;
+  }
+  list.innerHTML = history.map((item, i) =>
+    '<div class="history-item" onclick="restoreHistory(' + i + ')">' +
+      '<div class="history-ko">' + escapeHtml(item.ko) + '</div>' +
+      '<div class="history-en">' + escapeHtml(item.en) + '</div>' +
+      '<div class="history-time">' + item.time + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function restoreHistory(i) {
+  const item = history[i];
+  document.getElementById('input-text').value = item.ko;
+  document.getElementById('output-text').textContent = item.en;
+  document.getElementById('copy-btn').disabled = false;
+  currentResult = item.en;
+  onInput();
+  toast('기록을 불러왔습니다');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
